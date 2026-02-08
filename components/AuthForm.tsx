@@ -1,39 +1,55 @@
 "use client"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
 
-
-import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input";
+import { z } from "zod";
 import Image from 'next/image'
 import Link from "next/link";
+import {toast} from "sonner";
+import { useForm } from "react-hook-form"
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod"
+
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import {values} from "eslint-config-next";
+import FormField from "@/components/FormField";
 
 
-const formSchema = z.object({
-    username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be at most 20 characters"),
-})
+const authFormSchema = (type: FormType) => {
+    return z.object({
+        name: type === 'sign-up' ? z.string().min(3) : z.string().optional(),
+        email: z.string().email(),
+        password: z.string().min(3),
+    })
+}
 
 const AuthForm = ({ type }: {type: FormType}) => {
+    const router = useRouter();
+    const formSchema = authFormSchema(type);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
+            name: "",
+            email: "",
+            password: "",
         },
     })
 
-    function onSubmit(data: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        console.log(data)
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        try {
+            if(type === 'sign-up') {
+                toast.success('Account created successfully. Please sign in.');
+                router.push('/sign-in')
+               // console.log('SIGN UP', values);
+            } else {
+                toast.success('Sign successfully.');
+                router.push('/')
+               // console.log('SIGN IN', values);
+            }
+
+        } catch(error){
+            console.log(error);
+            toast.error(`There was an error: ${error}`)
+        }
     }
 
     const isSignIn = type === 'sign-in';
@@ -53,12 +69,26 @@ const AuthForm = ({ type }: {type: FormType}) => {
                 <h3>Practice job interview with AI </h3>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 mt-4 form">
-                        {!isSignIn && <p>Name</p>}
-                        <p>Email</p>
-                        <p>Password</p>
+                        {!isSignIn && (
+                            <FormField control={form.control}
+                                       name="name"
+                                       label="Name"
+                                       placeholder="Your Name" />
+                        )}
+                        <FormField control={form.control}
+                                   name="email"
+                                   label="Email"
+                                   placeholder="Your Email Adress"
+                                   type="email"
 
+                        />
 
-
+                        <FormField control={form.control}
+                                   name="password"
+                                   label="Password"
+                                   placeholder="Enter your password"
+                                   type="password"
+                        />
                         <Button type="submit" className="btn">{isSignIn ? 'Sign in' : 'Create an Account'}</Button>
                     </form>
                 </Form>
@@ -68,7 +98,7 @@ const AuthForm = ({ type }: {type: FormType}) => {
                     <Link href={!isSignIn ? '/sign-in' : '/sign-up'}
                     className="font-bold text-user-primary ml-1"
                     >
-                        {!isSignIn ? 'Sign In' : '/sign-up'}
+                        {!isSignIn ? 'Sign In' : 'Sign-up'}
                     </Link>
 
                 </p>
