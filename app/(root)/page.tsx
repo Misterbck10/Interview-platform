@@ -40,7 +40,7 @@ const Page = () => {
                         <InterviewCard  {...interview} key={interview.id}/>
 
                     ))}
-                    {/*<p>There are not interviews available</p>*/}
+                    {/*fire*/}
 
                 </div>
 
