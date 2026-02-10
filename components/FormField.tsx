@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 
-interface FormFieldProps<T extends FieldValues > {
+interface FormFieldProps<T extends FieldValues> {
     control: Control<T>;
     name: Path<T>;
     label: string;
@@ -18,24 +18,27 @@ interface FormFieldProps<T extends FieldValues > {
 
 }
 
-const FormField = ({ control, name, label, placeholder, type ="text"}: FormFieldProps<T>) => (
-    <Controller name={name}
-                control={control}
-                render={({ field }) =>
-        (
-                    <FormItem>
-                            <FormLabel className="label">{label}</FormLabel>
-                            <FormControl>
-                                    <Input
-                                        {...field}
-                                        className="input"
-                                        placeholder={placeholder}
-                                        type={type}
-                                    />
-                            </FormControl>
-                            <FormMessage />
-                    </FormItem>
-                )}
-    />
-);
-export default FormField
+function FormField<T extends FieldValues>({ control, name, label, placeholder, type = "text" }: FormFieldProps<T>) {
+    return (
+        <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="label">{label}</FormLabel>
+                    <FormControl>
+                        <Input
+                            {...field}
+                            className="input"
+                            placeholder={placeholder}
+                            type={type}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    );
+}
+
+export default FormField;
